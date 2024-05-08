@@ -4,11 +4,21 @@
   "description": "My solution for the technical interview project at MCA Spain",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "author": "sergio-cravas",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "20.12.11",
+    "@types/react": "18.3.1",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "next": "^14.2.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }
