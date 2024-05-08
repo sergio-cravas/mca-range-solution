@@ -1,2 +1,44 @@
+@import '@/shared/styles/colors.scss';
+
 .range {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.5rem;
+
+  &__label {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  &__input {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 8rem;
+    height: 0.25rem;
+
+    background-color: $primary-dark;
+
+    &__bullet {
+      position: absolute;
+
+      width: 1rem;
+      height: 1rem;
+      border-radius: 100%;
+      background-color: $accent-color;
+
+      &:hover,
+      &:focus {
+        cursor: grab;
+        background-color: $accent-color-light;
+      }
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+  }
 }

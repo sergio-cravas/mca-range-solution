@@ -2,17 +2,20 @@ import styles from './range.module.scss';
 
 type Props = {
   label: string;
-  min: { value: number; label: string; onChange: (value: number) => void };
-  max: { value: number; label: string; onChange: (value: number) => void };
+  rangeValues: { value: number; label: string; onChange?: (value: number) => void }[];
+  onChangeRangeMin: (min: number) => void;
+  onChangeRangeMax: (max: number) => void;
 };
 
-const Range = ({ label, min, max }: Props) => {
+const Range = ({ label, rangeValues, onChangeRangeMin, onChangeRangeMax }: Props) => {
   return (
     <div className={styles.range}>
       <label className={styles.range__label}>{label}</label>
 
-      <div>
-        {min.label} - {max.label}
+      <div className={styles.range__input}>
+        <div className={styles['range__input__bullet']} style={{ left: '50%' }} />
+
+        <div className={styles['range__input__bullet']} style={{ left: '0%' }} />
       </div>
     </div>
   );

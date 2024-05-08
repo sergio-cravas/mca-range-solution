@@ -10,6 +10,8 @@ export default function Page() {
   const [min, setMin] = useState<number>(0);
   const [max, setMax] = useState<number>(100);
 
+  const [range, setRange] = useState<[number, number]>([0, 0]);
+
   return (
     <div className={styles.excercise1}>
       <h1 className={styles.excercise1__title}>Normal Range</h1>
@@ -22,8 +24,12 @@ export default function Page() {
       <div className={styles['excercise1__solution-links']}>
         <Range
           label="Price range"
-          min={{ value: min, label: `${min}€`, onChange: setMax }}
-          max={{ value: max, label: `${max}€`, onChange: setMin }}
+          rangeValues={[
+            { value: min, label: `${min}€`, onChange: setMin },
+            { value: max, label: `${max}€`, onChange: setMax },
+          ]}
+          onChangeRangeMin={(value) => setRange((prev) => [value, prev[1]])}
+          onChangeRangeMax={(value) => setRange((prev) => [prev[0], value])}
         />
       </div>
     </div>
