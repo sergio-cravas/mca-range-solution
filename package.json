@@ -1,0 +1,14 @@
+{
+  "name": "mca-range-solution",
+  "version": "1.0.0",
+  "description": "My solution for the technical interview project at MCA Spain",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sergio-cravas",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
