@@ -55,6 +55,16 @@
       width: 100%;
       display: flex;
       justify-content: space-between;
+
+      &__input {
+        width: 3rem;
+        border: none;
+        background-color: transparent;
+
+        color: $white;
+        font-size: 1rem;
+        font-weight: 500;
+      }
     }
   }
 }

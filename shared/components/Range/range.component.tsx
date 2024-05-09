@@ -3,7 +3,7 @@ import styles from './range.module.scss';
 
 type Props = {
   label: string;
-  rangeValues: { value: number; label: string; onChange?: (value: number) => void }[];
+  rangeValues: { value: number; onChange?: (value: number) => void }[];
   onChangeRangeMin: (min: number) => void;
   onChangeRangeMax: (max: number) => void;
 };
@@ -13,9 +13,12 @@ const Range = ({ label, rangeValues, onChangeRangeMin, onChangeRangeMax }: Props
   const minBulletRef = useRef<HTMLDivElement>(null);
   const maxBulletRef = useRef<HTMLDivElement>(null);
 
-  const [minValue, setMinValue] = useState<number>(rangeValues[0].value || 0);
-  const [maxValue, setMaxValue] = useState<number>(rangeValues[rangeValues.length - 1].value || 100);
+  const initialMinRangeValue = rangeValues[0].value || 0;
+  const initialMaxRangeValue = rangeValues[rangeValues.length - 1].value || 100;
+
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [minValue, setMinValue] = useState<number>(initialMinRangeValue);
+  const [maxValue, setMaxValue] = useState<number>(initialMaxRangeValue);
 
   const updateMinBulletPosition = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -30,16 +33,17 @@ const Range = ({ label, rangeValues, onChangeRangeMin, onChangeRangeMax }: Props
 
         let finalPosition = Math.round(((clickPosition - initialPosition - bulletHalfWidth) / sliderWidth) * 100);
 
-        const minRangeValue = 0;
-        const maxRangeValue = Math.min(maxValue, 100);
+        const minRangeValue = initialMinRangeValue;
+        const maxRangeValue = Math.min(maxValue, initialMaxRangeValue);
 
         finalPosition = Math.max(minRangeValue, finalPosition);
         finalPosition = Math.min(maxRangeValue, finalPosition);
 
+        onChangeRangeMin(initialMinRangeValue * (1 + finalPosition / 100));
         setMinValue(finalPosition);
       }
     },
-    [isDragging, maxValue]
+    [isDragging, maxValue, initialMinRangeValue, initialMaxRangeValue, onChangeRangeMin]
   );
 
   const updateMaxBulletPosition = useCallback(
@@ -55,16 +59,20 @@ const Range = ({ label, rangeValues, onChangeRangeMin, onChangeRangeMax }: Props
 
         let finalPosition = Math.round(((clickPosition - initialPosition - bulletHalfWidth) / sliderWidth) * 100);
 
-        const minRangeValue = Math.max(0, minValue);
-        const maxRangeValue = 100;
+        const minRangeValue = Math.max(initialMinRangeValue, minValue);
+        const maxRangeValue = initialMaxRangeValue;
 
         finalPosition = Math.max(minRangeValue, finalPosition);
         finalPosition = Math.min(maxRangeValue, finalPosition);
 
+        onChangeRangeMax(initialMinRangeValue * (1 + finalPosition / 100));
+
+        if (finalPosition === initialMaxRangeValue) finalPosition -= Math.round((bulletHalfWidth / sliderWidth) * 100);
+
         setMaxValue(finalPosition);
       }
     },
-    [isDragging, minValue]
+    [isDragging, minValue, initialMinRangeValue, initialMaxRangeValue, onChangeRangeMax]
   );
 
   const handleOnStartDragging = useCallback(
@@ -118,9 +126,21 @@ const Range = ({ label, rangeValues, onChangeRangeMin, onChangeRangeMax }: Props
         />
 
         <div className={styles['range__input__range-values']}>
-          {rangeValues.map((value, index) => (
-            <span key={`range_value-label_${index}`}>{value.label}</span>
-          ))}
+          {rangeValues.map((value, index) =>
+            Boolean(value.onChange) ? (
+              <input
+                key={`range_value-input_${index}`}
+                type="number"
+                className={styles['range__input__range-values__input']}
+                value={value.value}
+                onChange={(event) => value.onChange && value.onChange(+event.target.value)}
+              />
+            ) : (
+              <span key={`range_value-label_${index}`} className={styles['range__input__range-values__label']}>
+                {value.value}
+              </span>
+            )
+          )}
         </div>
       </div>
     </div>
