@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import debounce from 'lodash.debounce';
+import { getRealBulletValue, getBulletPositionRelativeToRangeSlider } from '@/shared/functions';
 
 import styles from './range.module.scss';
 
@@ -40,27 +40,21 @@ const Range = ({
       const minBullet = minBulletRef.current;
 
       if (isDragging && rangeInput && minBullet) {
-        const clickPosition = event.clientX;
-        const sliderWidth = rangeInput.offsetWidth;
-        const bulletHalfWidth = minBullet.offsetWidth / 2;
-        const initialPosition = inputRef.current.getBoundingClientRect().left;
+        let valueRelativeToRange = getBulletPositionRelativeToRangeSlider(minBullet, rangeInput, event.clientX);
 
-        let finalPosition = Math.round(((clickPosition - initialPosition - bulletHalfWidth) / sliderWidth) * 100);
+        const minRangeValue = minValue;
+        const maxRangeValue = Math.min(maxBulletValue, maxValue);
 
-        const minRangeValue = 0;
-        const maxRangeValue = Math.min(maxBulletValue, 100);
+        valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
+        valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
 
-        finalPosition = Math.max(minRangeValue, finalPosition);
-        finalPosition = Math.min(maxRangeValue, finalPosition);
-
-        const numToSend = (maxValue * (finalPosition / 100)) / 1;
-        const numToSendRounded = Math.round(numToSend * 100) / 100;
+        const numToSendRounded = getRealBulletValue(maxValue, valueRelativeToRange);
 
         onChangeMinBulletValue(numToSendRounded);
-        setMinBulletValue(finalPosition);
+        setMinBulletValue(valueRelativeToRange);
       }
     },
-    [isDragging, maxBulletValue, maxValue, onChangeMinBulletValue]
+    [isDragging, maxBulletValue, minValue, maxValue, onChangeMinBulletValue]
   );
 
   const updateMaxBulletPosition = useCallback(
@@ -69,30 +63,23 @@ const Range = ({
       const maxBullet = maxBulletRef.current;
 
       if (isDragging && rangeInput && maxBullet) {
-        const clickPosition = event.clientX;
-        const sliderWidth = rangeInput.offsetWidth;
-        const bulletHalfWidth = maxBullet.offsetWidth / 2;
-        const initialPosition = inputRef.current.getBoundingClientRect().left;
+        let valueRelativeToRange = getBulletPositionRelativeToRangeSlider(maxBullet, rangeInput, event.clientX);
 
-        let finalPosition = Math.round(((clickPosition - initialPosition - bulletHalfWidth) / sliderWidth) * 100);
+        const minRangeValue = Math.max(minValue, minBulletValue);
+        const maxRangeValue = maxValue;
 
-        const minRangeValue = Math.max(0, minBulletValue);
-        const maxRangeValue = 100;
+        valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
+        valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
 
-        finalPosition = Math.max(minRangeValue, finalPosition);
-        finalPosition = Math.min(maxRangeValue, finalPosition);
-
-        const numToSend = (maxValue * (finalPosition / 100)) / 1;
+        const numToSend = (maxValue * (valueRelativeToRange / 100)) / 1;
         const numToSendRounded = Math.round(numToSend * 100) / 100;
 
         onChangeMaxBulletValue(numToSendRounded);
 
-        if (finalPosition === maxValue) finalPosition -= Math.round((bulletHalfWidth / sliderWidth) * 100);
-
-        setMaxBulletValue(finalPosition);
+        setMaxBulletValue(valueRelativeToRange);
       }
     },
-    [isDragging, minBulletValue, maxValue, onChangeMaxBulletValue]
+    [isDragging, minBulletValue, minValue, maxValue, onChangeMaxBulletValue]
   );
 
   const handleOnStartDragging = useCallback(
