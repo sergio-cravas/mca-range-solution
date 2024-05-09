@@ -7,8 +7,8 @@ export default function Page() {
       <h1 className={styles.home__title}>Range component selector</h1>
 
       <p className={styles.home__description}>
-        Hi, I'm Sergio! And wellcome to my technical interview solution for MCA Spain. Below you have the access for the two
-        versions of my project:
+        Hi, I&apos;m Sergio! And wellcome to my technical interview solution for MCA Spain. Below you have the access for the
+        two versions of my project:
       </p>
 
       <div className={styles['home__solution-links']}>
