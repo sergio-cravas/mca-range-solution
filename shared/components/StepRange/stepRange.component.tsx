@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { getRealBulletValue, getBulletPositionRelativeToRangeSlider } from '@/shared/functions';
+import { getRealBulletValue, getBulletPositionRelativeToRangeSlider, getClosestValueInArray } from '@/shared/functions';
 
 import styles from './stepRange.module.scss';
 
@@ -28,72 +28,92 @@ const StepRange = ({ label, rangeValues = DEFAULT_RANGE_VALUES, onChangeMinBulle
   const [maxBulletValue, setMaxBulletValue] = useState<number>(maxValue);
 
   const updateMinBulletPosition = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      const rangeInput = inputRef.current;
-      const minBullet = minBulletRef.current;
+    (valueRelativeToRange: number) => {
+      const minRangeValue = 0;
+      const maxRangeValue = Math.min(maxBulletValue, 100);
 
-      if (isDraggingMin && rangeInput && minBullet) {
-        let valueRelativeToRange = getBulletPositionRelativeToRangeSlider(minBullet, rangeInput, event.clientX);
+      valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
+      valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
 
-        const minRangeValue = 0;
-        const maxRangeValue = Math.min(maxBulletValue, 100);
+      const numToSendRounded = getRealBulletValue(maxValue, valueRelativeToRange);
 
-        valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
-        valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
-
-        const numToSendRounded = getRealBulletValue(maxValue, valueRelativeToRange);
-
-        onChangeMinBulletValue(numToSendRounded);
-        setMinBulletValue(valueRelativeToRange);
-      }
+      onChangeMinBulletValue(numToSendRounded);
+      setMinBulletValue(valueRelativeToRange);
     },
-    [isDraggingMin, maxBulletValue, maxValue, onChangeMinBulletValue]
+    [maxBulletValue, maxValue, onChangeMinBulletValue]
   );
 
   const updateMaxBulletPosition = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
+    (valueRelativeToRange: number) => {
+      const minRangeValue = Math.max(0, minBulletValue);
+      const maxRangeValue = 100;
+
+      valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
+      valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
+
+      const numToSendRounded = getRealBulletValue(maxValue, valueRelativeToRange);
+
+      onChangeMaxBulletValue(numToSendRounded);
+      setMaxBulletValue(valueRelativeToRange);
+    },
+    [minBulletValue, maxValue, onChangeMaxBulletValue]
+  );
+
+  const handleOnMouseMove = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>, bullet: 'min' | 'max') => {
       const rangeInput = inputRef.current;
+      const minBullet = minBulletRef.current;
       const maxBullet = maxBulletRef.current;
 
-      if (isDraggingMax && rangeInput && maxBullet) {
+      if (!rangeInput || !minBullet || !maxBullet) return;
+
+      if (bullet === 'min' && isDraggingMin) {
+        let valueRelativeToRange = getBulletPositionRelativeToRangeSlider(minBullet, rangeInput, event.clientX);
+        updateMinBulletPosition(valueRelativeToRange);
+      }
+
+      if (bullet === 'max' && isDraggingMax) {
         let valueRelativeToRange = getBulletPositionRelativeToRangeSlider(maxBullet, rangeInput, event.clientX);
-
-        const minRangeValue = Math.max(0, minBulletValue);
-        const maxRangeValue = 100;
-
-        valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
-        valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
-
-        const numToSendRounded = getRealBulletValue(maxValue, valueRelativeToRange);
-
-        onChangeMaxBulletValue(numToSendRounded);
-        setMaxBulletValue(valueRelativeToRange);
+        updateMaxBulletPosition(valueRelativeToRange);
       }
     },
-    [isDraggingMax, minBulletValue, maxValue, onChangeMaxBulletValue]
+    [isDraggingMax, isDraggingMin, updateMaxBulletPosition, updateMinBulletPosition]
   );
 
   const handleOnStartDragging = useCallback(
     (event: React.MouseEvent<HTMLDivElement>, bullet: 'min' | 'max') => {
-      if (bullet === 'min') {
-        setIsDraggingMin(true);
-        updateMinBulletPosition(event);
-      } else {
-        setIsDraggingMax(true);
-        updateMaxBulletPosition(event);
-      }
+      if (bullet === 'min') setIsDraggingMin(true);
+      else setIsDraggingMax(true);
+
+      handleOnMouseMove(event, bullet);
 
       event.preventDefault();
     },
-    [updateMaxBulletPosition, updateMinBulletPosition]
+    [handleOnMouseMove]
   );
 
   const handleOnEndDragging = useCallback(() => {
+    if (isDraggingMin) {
+      const newValue = getClosestValueInArray(minBulletValue, rangeValues);
+      updateMinBulletPosition(newValue);
+    }
+
+    if (isDraggingMax) {
+      const newValue = getClosestValueInArray(maxBulletValue, rangeValues);
+      updateMaxBulletPosition(newValue);
+    }
+
     setIsDraggingMin(false);
     setIsDraggingMax(false);
-
-    setMinBulletValue(20);
-  }, []);
+  }, [
+    rangeValues,
+    isDraggingMin,
+    isDraggingMax,
+    minBulletValue,
+    maxBulletValue,
+    updateMinBulletPosition,
+    updateMaxBulletPosition,
+  ]);
 
   useEffect(() => {
     document.addEventListener('mouseup', handleOnEndDragging);
@@ -117,16 +137,16 @@ const StepRange = ({ label, rangeValues = DEFAULT_RANGE_VALUES, onChangeMinBulle
           ref={minBulletRef}
           className={styles['step-range__input__bullet']}
           style={{ left: `${minBulletValue}%` }}
+          onMouseMove={(event) => handleOnMouseMove(event, 'min')}
           onMouseDown={(event) => handleOnStartDragging(event, 'min')}
-          onMouseMove={updateMinBulletPosition}
         />
 
         <div
           ref={maxBulletRef}
           className={styles['step-range__input__bullet']}
           style={{ left: `${maxBulletValue}%` }}
+          onMouseMove={(event) => handleOnMouseMove(event, 'max')}
           onMouseDown={(event) => handleOnStartDragging(event, 'max')}
-          onMouseMove={updateMaxBulletPosition}
         />
       </div>
 
