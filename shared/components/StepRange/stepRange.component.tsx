@@ -152,7 +152,11 @@ const StepRange = ({ label, rangeValues = DEFAULT_RANGE_VALUES, onChangeMinBulle
 
       <div className={styles['step-range__input__range-values']}>
         {rangeValues.map((rangeValue: number) => (
-          <label key={`step-range__value-${rangeValue}`} className={styles['step-range__input__range-values__item']}>
+          <label
+            key={`step-range__value-${rangeValue}`}
+            className={styles['step-range__input__range-values__item']}
+            style={{ left: `${Math.round((rangeValue * 100) / maxValue)}%` }}
+          >
             {rangeValue}
           </label>
         ))}
