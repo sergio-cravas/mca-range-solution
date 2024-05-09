@@ -1,9 +1,10 @@
+import config from '@/shared/config';
 import FixedRangeSection from './_components/fixedRangeSection';
 
 import styles from './page.module.scss';
 
 const getRangeValuesData = async () => {
-  const response = await fetch('http://demo2914590.mockable.io/fixed-values').then((response) => {
+  const response = await fetch(config.apiURL + '/fixed-values').then((response) => {
     if (!response?.ok) throw new Error('Failed at fetching data!');
     return response.json();
   });

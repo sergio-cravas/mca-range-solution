@@ -1,9 +1,10 @@
+import config from '@/shared/config';
 import NormalRangeSection from './_components/normalRangeSection';
 
 import styles from './page.module.scss';
 
 const getMinAndMaxData = async () => {
-  const response = await fetch('http://demo2914590.mockable.io/normal-values').then((data) => {
+  const response = await fetch(config.apiURL + '/normal-values').then((data) => {
     if (!data?.ok) throw new Error('Failed at fetching data!');
     return data.json();
   });
