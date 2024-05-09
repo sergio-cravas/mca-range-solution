@@ -34,8 +34,8 @@ export default function Page() {
           label="Price range"
           minValue={min}
           maxValue={max}
-          onChangeMinValue={setMin}
-          onChangeMaxValue={setMax}
+          onChangeMinLabelValue={setMin}
+          onChangeMaxLabelValue={setMax}
           onChangeMinBulletValue={onChangeMinBulletValue}
           onChangeMaxBulletValue={onChangeMaxBulletValue}
         />
