@@ -42,8 +42,8 @@ const Range = ({
       if (isDragging && rangeInput && minBullet) {
         let valueRelativeToRange = getBulletPositionRelativeToRangeSlider(minBullet, rangeInput, event.clientX);
 
-        const minRangeValue = 0;
-        const maxRangeValue = Math.min(maxBulletValue, 100);
+        const minRangeValue = minValue;
+        const maxRangeValue = Math.min(maxBulletValue, maxValue);
 
         valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
         valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
@@ -54,7 +54,7 @@ const Range = ({
         setMinBulletValue(valueRelativeToRange);
       }
     },
-    [isDragging, maxBulletValue, maxValue, onChangeMinBulletValue]
+    [isDragging, maxBulletValue, minValue, maxValue, onChangeMinBulletValue]
   );
 
   const updateMaxBulletPosition = useCallback(
@@ -65,8 +65,8 @@ const Range = ({
       if (isDragging && rangeInput && maxBullet) {
         let valueRelativeToRange = getBulletPositionRelativeToRangeSlider(maxBullet, rangeInput, event.clientX);
 
-        const minRangeValue = Math.max(0, minBulletValue);
-        const maxRangeValue = 100;
+        const minRangeValue = Math.max(minValue, minBulletValue);
+        const maxRangeValue = maxValue;
 
         valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
         valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
@@ -79,7 +79,7 @@ const Range = ({
         setMaxBulletValue(valueRelativeToRange);
       }
     },
-    [isDragging, minBulletValue, maxValue, onChangeMaxBulletValue]
+    [isDragging, minBulletValue, minValue, maxValue, onChangeMaxBulletValue]
   );
 
   const handleOnStartDragging = useCallback(

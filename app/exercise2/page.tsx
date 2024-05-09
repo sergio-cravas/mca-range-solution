@@ -1,45 +1,31 @@
-'use client';
-
-import { useState } from 'react';
-
-import { Range } from '@/shared/components/Range/range.component';
+import FixedRangeSection from './_components/fixedRangeSection';
 
 import styles from './page.module.scss';
-import { StepRange } from '@/shared/components/StepRange/stepRange.component';
 
-export default function Page() {
-  const [range, setRange] = useState<[number, number]>([0, 100]);
-  const [rangeValues, setRangeValues] = useState<number[]>([0, 25, 50, 75, 100]);
+const getRangeValuesData = async () => {
+  const response = await fetch('http://demo2914590.mockable.io/fixed-values').then((response) => {
+    if (!response?.ok) throw new Error('Failed at fetching data!');
+    return response.json();
+  });
 
-  const onChangeMinBulletValue = (value: number) => {
-    setRange((prev) => [value, prev[1]]);
-  };
+  const formattedRangeValues = JSON.parse(response?.rangeValues);
 
-  const onChangeMaxBulletValue = (value: number) => {
-    setRange((prev) => [prev[0], value]);
-  };
+  return { rangeValues: formattedRangeValues || [0, 100] };
+};
+
+export default async function Page() {
+  const { rangeValues } = await getRangeValuesData();
 
   return (
-    <div className={styles.excercise1}>
-      <h1 className={styles.excercise1__title}>Fixed Values Range</h1>
+    <div className={styles.excercise2}>
+      <h1 className={styles.excercise2__title}>Fixed Values Range</h1>
 
-      <ul className={styles.excercise1__description}>
+      <ul className={styles.excercise2__description}>
         On this excercise, the objective is to create a custom input range (without using any HTML range input tag) with two
         bullets, one for a min value and another for the max value.
       </ul>
 
-      <div className={styles['excercise1__solution-links']}>
-        <StepRange
-          label="Price range"
-          rangeValues={rangeValues}
-          onChangeMinBulletValue={onChangeMinBulletValue}
-          onChangeMaxBulletValue={onChangeMaxBulletValue}
-        />
-
-        <div>
-          <strong>Range selected:</strong> From {range[0]} to {range[1]}
-        </div>
-      </div>
+      <FixedRangeSection rangeValues={rangeValues} />
     </div>
   );
 }
