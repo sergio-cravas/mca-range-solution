@@ -10,7 +10,15 @@ export default function Page() {
   const [min, setMin] = useState<number>(0);
   const [max, setMax] = useState<number>(100);
 
-  const [range, setRange] = useState<[number, number]>([0, 0]);
+  const [range, setRange] = useState<[number, number]>([min, max]);
+
+  const onChangeMinBulletValue = (value: number) => {
+    setRange((prev) => [value, prev[1]]);
+  };
+
+  const onChangeMaxBulletValue = (value: number) => {
+    setRange((prev) => [prev[0], value]);
+  };
 
   return (
     <div className={styles.excercise1}>
@@ -24,13 +32,17 @@ export default function Page() {
       <div className={styles['excercise1__solution-links']}>
         <Range
           label="Price range"
-          rangeValues={[
-            { value: min, label: `${min}€`, onChange: setMin },
-            { value: max, label: `${max}€`, onChange: setMax },
-          ]}
-          onChangeRangeMin={(value) => setRange((prev) => [value, prev[1]])}
-          onChangeRangeMax={(value) => setRange((prev) => [prev[0], value])}
+          minValue={min}
+          maxValue={max}
+          onChangeMinValue={setMin}
+          onChangeMaxValue={setMax}
+          onChangeMinBulletValue={onChangeMinBulletValue}
+          onChangeMaxBulletValue={onChangeMaxBulletValue}
         />
+
+        <div>
+          <strong>Range selected:</strong> From {range[0]} to {range[1]}
+        </div>
       </div>
     </div>
   );

@@ -1,24 +1,33 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import styles from './range.module.scss';
 
 type Props = {
   label: string;
-  rangeValues: { value: number; onChange?: (value: number) => void }[];
-  onChangeRangeMin: (min: number) => void;
-  onChangeRangeMax: (max: number) => void;
+  minValue: number;
+  maxValue: number;
+  onChangeMinValue: (value: number) => void;
+  onChangeMaxValue: (value: number) => void;
+  onChangeMinBulletValue: (min: number) => void;
+  onChangeMaxBulletValue: (max: number) => void;
 };
 
-const Range = ({ label, rangeValues, onChangeRangeMin, onChangeRangeMax }: Props) => {
+const Range = ({
+  label,
+  minValue = 0,
+  maxValue = 100,
+  onChangeMinValue,
+  onChangeMaxValue,
+  onChangeMinBulletValue,
+  onChangeMaxBulletValue,
+}: Props) => {
   const inputRef = useRef<HTMLDivElement>(null);
   const minBulletRef = useRef<HTMLDivElement>(null);
   const maxBulletRef = useRef<HTMLDivElement>(null);
 
-  const initialMinRangeValue = rangeValues[0].value || 0;
-  const initialMaxRangeValue = rangeValues[rangeValues.length - 1].value || 100;
-
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [minValue, setMinValue] = useState<number>(initialMinRangeValue);
-  const [maxValue, setMaxValue] = useState<number>(initialMaxRangeValue);
+  const [minBulletValue, setMinBulletValue] = useState<number>(minValue);
+  const [maxBulletValue, setMaxBulletValue] = useState<number>(maxValue);
 
   const updateMinBulletPosition = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -33,17 +42,20 @@ const Range = ({ label, rangeValues, onChangeRangeMin, onChangeRangeMax }: Props
 
         let finalPosition = Math.round(((clickPosition - initialPosition - bulletHalfWidth) / sliderWidth) * 100);
 
-        const minRangeValue = initialMinRangeValue;
-        const maxRangeValue = Math.min(maxValue, initialMaxRangeValue);
+        const minRangeValue = minValue;
+        const maxRangeValue = Math.min(maxBulletValue, maxValue);
 
         finalPosition = Math.max(minRangeValue, finalPosition);
         finalPosition = Math.min(maxRangeValue, finalPosition);
 
-        onChangeRangeMin(initialMinRangeValue * (1 + finalPosition / 100));
-        setMinValue(finalPosition);
+        const numToSend = (maxValue * (finalPosition / 100)) / 1;
+        const numToSendRounded = Math.round(numToSend * 100) / 100;
+
+        onChangeMinBulletValue(numToSendRounded);
+        setMinBulletValue(finalPosition);
       }
     },
-    [isDragging, maxValue, initialMinRangeValue, initialMaxRangeValue, onChangeRangeMin]
+    [isDragging, minValue, maxBulletValue, maxValue, onChangeMinBulletValue]
   );
 
   const updateMaxBulletPosition = useCallback(
@@ -59,20 +71,23 @@ const Range = ({ label, rangeValues, onChangeRangeMin, onChangeRangeMax }: Props
 
         let finalPosition = Math.round(((clickPosition - initialPosition - bulletHalfWidth) / sliderWidth) * 100);
 
-        const minRangeValue = Math.max(initialMinRangeValue, minValue);
-        const maxRangeValue = initialMaxRangeValue;
+        const minRangeValue = Math.max(minValue, minBulletValue);
+        const maxRangeValue = maxValue;
 
         finalPosition = Math.max(minRangeValue, finalPosition);
         finalPosition = Math.min(maxRangeValue, finalPosition);
 
-        onChangeRangeMax(initialMinRangeValue * (1 + finalPosition / 100));
+        const numToSend = (maxValue * (finalPosition / 100)) / 1;
+        const numToSendRounded = Math.round(numToSend * 100) / 100;
 
-        if (finalPosition === initialMaxRangeValue) finalPosition -= Math.round((bulletHalfWidth / sliderWidth) * 100);
+        onChangeMaxBulletValue(numToSendRounded);
 
-        setMaxValue(finalPosition);
+        if (finalPosition === maxValue) finalPosition -= Math.round((bulletHalfWidth / sliderWidth) * 100);
+
+        setMaxBulletValue(finalPosition);
       }
     },
-    [isDragging, minValue, initialMinRangeValue, initialMaxRangeValue, onChangeRangeMax]
+    [isDragging, minValue, minBulletValue, maxValue, onChangeMaxBulletValue]
   );
 
   const handleOnStartDragging = useCallback(
@@ -124,24 +139,22 @@ const Range = ({ label, rangeValues, onChangeRangeMin, onChangeRangeMax }: Props
           onMouseDown={(event) => handleOnStartDragging(event, 'max')}
           onMouseMove={updateMaxBulletPosition}
         />
+      </div>
 
-        <div className={styles['range__input__range-values']}>
-          {rangeValues.map((value, index) =>
-            Boolean(value.onChange) ? (
-              <input
-                key={`range_value-input_${index}`}
-                type="number"
-                className={styles['range__input__range-values__input']}
-                value={value.value}
-                onChange={(event) => value.onChange && value.onChange(+event.target.value)}
-              />
-            ) : (
-              <span key={`range_value-label_${index}`} className={styles['range__input__range-values__label']}>
-                {value.value}
-              </span>
-            )
-          )}
-        </div>
+      <div className={styles['range__input__range-values']}>
+        <input
+          type="number"
+          className={styles['range__input__range-values__input']}
+          value={minValue}
+          onChange={(event) => onChangeMinValue(+event.target.value)}
+        />
+
+        <input
+          type="number"
+          className={styles['range__input__range-values__input']}
+          value={maxValue}
+          onChange={(event) => onChangeMaxValue(+event.target.value)}
+        />
       </div>
     </div>
   );
