@@ -1,0 +1,66 @@
+@import '@/shared/styles/colors.scss';
+
+.step-range {
+  display: flex;
+  flex-direction: column;
+
+  gap: 1.5rem;
+
+  &__label {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  &__input {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 16rem;
+    height: 0.5rem;
+
+    background-color: $primary-dark;
+
+    &__selection {
+      position: absolute;
+
+      height: 0.5rem;
+      background-color: $primary;
+    }
+
+    &__bullet {
+      position: absolute;
+
+      width: 2rem;
+      height: 2rem;
+      border-radius: 100%;
+      background-color: $accent-color;
+
+      &:hover,
+      &:focus {
+        cursor: grab;
+        background-color: $accent-color-light;
+      }
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+
+    &__range-values {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+
+      &__item {
+        width: fit-content;
+        max-width: 3rem;
+
+        color: $white;
+        font-size: 1rem;
+        font-weight: 500;
+      }
+    }
+  }
+}
