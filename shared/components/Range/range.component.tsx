@@ -121,13 +121,13 @@ const Range = ({
       <div ref={inputRef} className={styles.range__input}>
         <div
           className={styles.range__input__selection}
-          style={{ left: `${minValue}%`, width: `calc(${maxValue}% - ${minValue}%)` }}
+          style={{ left: `${minBulletValue}%`, width: `calc(${maxBulletValue}% - ${minBulletValue}%)` }}
         />
 
         <div
           ref={minBulletRef}
           className={styles.range__input__bullet}
-          style={{ left: `${minValue}%` }}
+          style={{ left: `${minBulletValue}%` }}
           onMouseDown={(event) => handleOnStartDragging(event, 'min')}
           onMouseMove={updateMinBulletPosition}
         />
@@ -135,7 +135,7 @@ const Range = ({
         <div
           ref={maxBulletRef}
           className={styles.range__input__bullet}
-          style={{ left: `${maxValue}%` }}
+          style={{ left: `${maxBulletValue}%` }}
           onMouseDown={(event) => handleOnStartDragging(event, 'max')}
           onMouseMove={updateMaxBulletPosition}
         />
