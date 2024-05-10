@@ -20,8 +20,15 @@ export default async function Page() {
       <h1 className={styles.exercise1__title}>Normal Range</h1>
 
       <p className={styles.exercise1__description}>
-        On this exercise, the objective is to create a custom input range (without using any HTML range input tag) with two
-        thumbs, one for a min value and another for the max value.
+        For the first exercise, the objective is to create a custom Range Input without the use of any html input tag.
+        <br />
+        <br />
+        This component recieves an array of numbers, using the first one of its minimum value and the last one as the maximum.
+        This array of values comes from a mocked http service, but it accepts values from any source, as long as they are passed
+        by parameters.
+        <br />
+        <br />
+        Also, you can update all this step values typing the new ones on the inputs below.
       </p>
 
       <NormalRangeSection min={min} max={max} />

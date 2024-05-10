@@ -1,6 +1,7 @@
 # Range Component - MCA Spain
 > By Sergio Cerdá Hervás
 
+
 Hi, I'm Sergio! Welcome to my solution to the technical test on MCA Spain. 
 
 As requested at the briefing of the exercise, this project was made up without any CLI, so my first steps on it were to create the repository on github, start the npm project using `npm init` and install all the necessary next and react dependencies.
