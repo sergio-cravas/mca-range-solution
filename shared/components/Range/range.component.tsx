@@ -141,37 +141,6 @@ const Range = ({
     updateMaxThumbPosition,
   ]);
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent, thumb: 'min' | 'max') => {
-      let getNewValue = (prev: number) => (event.key === 'ArrowLeft' ? prev - 1 : event.key === 'ArrowRight' ? prev + 1 : prev);
-
-      console.log(event.key, thumb, minThumbValue, getNewValue(minThumbValue));
-
-      if (thumb === 'min') {
-        updateMinThumbPosition(getNewValue(minThumbValue));
-      }
-
-      if (thumb === 'max') {
-        updateMaxThumbPosition(getNewValue(maxThumbValue));
-      }
-    },
-    [maxThumbValue, minThumbValue, updateMaxThumbPosition, updateMinThumbPosition]
-  );
-
-  const handleOnFocusStart = useCallback(
-    (thumb: 'min' | 'max') => {
-      document.addEventListener('keydown', (event) => handleKeyDown(event, thumb));
-    },
-    [handleKeyDown]
-  );
-
-  const handleOnFocusEnd = useCallback(
-    (thumb: 'min' | 'max') => {
-      document.removeEventListener('keydown', (event) => handleKeyDown(event, thumb));
-    },
-    [handleKeyDown]
-  );
-
   const handleOnUpdateRangeValue = debounce((index: number, value) => {
     onUpdateRangeValue && onUpdateRangeValue(index, value);
   }, 250);
@@ -181,10 +150,8 @@ const Range = ({
 
     return () => {
       document.removeEventListener('mouseup', handleOnEndDragging);
-      document.removeEventListener('keydown', (event) => handleKeyDown(event, 'min'));
-      document.removeEventListener('keydown', (event) => handleKeyDown(event, 'max'));
     };
-  }, [handleOnEndDragging, handleKeyDown]);
+  }, [handleOnEndDragging]);
 
   return (
     <div className={styles['range']}>
@@ -195,6 +162,8 @@ const Range = ({
       <div
         ref={rangeRef}
         className={styles['range__input']}
+        // aria-valuenow is not necessary due to aria-valuetext
+        // eslint-disable-next-line jsx-a11y/role-has-required-aria-props
         role="slider"
         aria-valuemin={minValue}
         aria-valuemax={maxValue}
@@ -207,25 +176,19 @@ const Range = ({
         />
 
         <div
-          tabIndex={0}
           aria-label="Minimum thumb"
           ref={minThumbRef}
           className={styles['range__input__thumb']}
           style={{ left: `${minThumbValue}%` }}
-          onFocus={() => handleOnFocusStart('min')}
-          onBlur={() => handleOnFocusEnd('min')}
           onMouseMove={(event) => handleOnMouseMove(event, 'min')}
           onMouseDown={(event) => handleOnStartDragging(event, 'min')}
         />
 
         <div
-          tabIndex={0}
           aria-label="Maximum thumb"
           ref={maxThumbRef}
           className={styles['range__input__thumb']}
           style={{ left: `${maxThumbValue}%` }}
-          onFocus={() => handleOnFocusStart('max')}
-          onBlur={() => handleOnFocusEnd('max')}
           onMouseMove={(event) => handleOnMouseMove(event, 'max')}
           onMouseDown={(event) => handleOnStartDragging(event, 'max')}
         />
