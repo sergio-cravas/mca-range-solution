@@ -11,7 +11,7 @@ type Props = {
 };
 
 const FixedRangeSection = ({ rangeValues }: Props) => {
-  const [range, setRange] = useState<[number, number]>([0, 100]);
+  const [range, setRange] = useState<[number, number]>([rangeValues[0], rangeValues[rangeValues.length - 1]]);
 
   const onChangeMinThumbValue = useCallback((value: number) => {
     setRange((prev) => [value, prev[1]]);

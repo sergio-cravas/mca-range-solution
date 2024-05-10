@@ -32,14 +32,29 @@ const Range = ({
   const minThumbRef = useRef<HTMLDivElement>(null);
   const maxThumbRef = useRef<HTMLDivElement>(null);
 
+  /**
+   * Real min value of the range. E.g.: 1.99
+   */
   const minValue = useMemo(() => rangeValues[0], [rangeValues]);
+  /**
+   * Real max value of the range. E.g.: 99.99
+   */
   const maxValue = useMemo(() => rangeValues[rangeValues.length - 1], [rangeValues]);
+  /**
+   * Real current range for showing it on html attributes. E.g.: [1.99, 99.99]
+   */
   const [currentValue, setCurrentValue] = useState<[number, number]>([minValue, maxValue]);
 
   const [isDraggingMin, setIsDraggingMin] = useState<boolean>(false);
   const [isDraggingMax, setIsDraggingMax] = useState<boolean>(false);
 
+  /**
+   * Real min thumb value over the range between min and max values. E.g.: 40.95
+   */
   const [minThumbValue, setMinThumbValue] = useState<number>(minValue);
+  /**
+   * Real max thumb value over the range between min and max values. E.g.: 80
+   */
   const [maxThumbValue, setMaxThumbValue] = useState<number>(maxValue);
 
   /**
