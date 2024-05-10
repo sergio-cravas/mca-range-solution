@@ -1,12 +1,15 @@
 @mixin page-container {
   width: 100%;
 
-  padding: 4rem 8rem;
-
   display: flex;
   flex-direction: column;
-
   align-items: center;
+
+  padding: 1.5rem 3rem;
+
+  @media (min-width: 720px) {
+    padding: 4rem 8rem;
+  }
 }
 
 @mixin page-title {
@@ -14,8 +17,12 @@
 }
 
 @mixin page-description {
-  max-width: 600px;
+  max-width: 90%;
   margin-bottom: 4rem;
 
   text-align: center;
+
+  @media (min-width: 720px) {
+    max-width: 600px;
+  }
 }

@@ -201,8 +201,8 @@ const Range = ({
               key={`range__value-${rangeValue}`}
               className={styles['range__input__range-values__input']}
               type="number"
-              min={list[index - 1] || minValue}
-              max={list[index + 1] || maxValue}
+              min={list[index - 1] || 0}
+              max={list[index + 1] || undefined}
               defaultValue={rangeValue}
               onChange={(event) => handleOnUpdateRangeValue(index, +event.target.value)}
             />
