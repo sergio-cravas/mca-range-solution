@@ -25,7 +25,7 @@ export default async function Page() {
         <br />
         <br />
         On this component, you can&apos;t edit the step values, but instead it allows you to set only a fixed range of values.
-        When you drag one thumb far away from a step point, it will reach the nearest one.
+        When you drag one thumb away from a step point, it will reach the nearest one.
       </p>
 
       <FixedRangeSection rangeValues={rangeValues} />
