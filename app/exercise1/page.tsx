@@ -4,7 +4,7 @@ import NormalRangeSection from './_components/normalRangeSection';
 import styles from './page.module.scss';
 
 const getMinAndMaxData = async () => {
-  const response = await fetch(config.apiURL + '/normal-values').then((data) => {
+  const response = await fetch(config.apiURL + '/normal-values', { next: { revalidate: 30 } }).then((data) => {
     if (!data?.ok) throw new Error('Failed at fetching data!');
     return data.json();
   });
