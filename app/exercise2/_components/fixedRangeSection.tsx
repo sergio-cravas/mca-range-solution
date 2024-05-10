@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
-import { StepRange } from '@/shared/components/StepRange/stepRange.component';
+import { Range } from '@/shared/components';
 
 import styles from './fixedRangeSection.module.scss';
 
@@ -23,7 +23,8 @@ const FixedRangeSection = ({ rangeValues }: Props) => {
 
   return (
     <div className={styles['fixed-range-section']}>
-      <StepRange
+      <Range
+        isFixedRange
         label="Price range"
         rangeValues={rangeValues}
         onChangeMinBulletValue={onChangeMinBulletValue}

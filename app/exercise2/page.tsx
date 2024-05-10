@@ -1,4 +1,5 @@
 import config from '@/shared/config';
+
 import FixedRangeSection from './_components/fixedRangeSection';
 
 import styles from './page.module.scss';

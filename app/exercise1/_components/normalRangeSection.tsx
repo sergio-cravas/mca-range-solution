@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
-import { Range } from '@/shared/components/Range/range.component';
+import { Range } from '@/shared/components';
 
 import styles from './normalRangeSection.module.scss';
 
@@ -25,14 +25,17 @@ const NormalRangeSection = ({ min: defaultMin, max: defaultMax }: Props) => {
     setRange((prev) => [prev[0], value]);
   }, []);
 
+  const handleOnUpdateRangeValue = (index: number, value: number) => {
+    if (index === 0) setMin(value);
+    else if (index === 1) setMax(value);
+  };
+
   return (
     <div className={styles['normal-range-section']}>
       <Range
         label="Price range"
-        minValue={min}
-        maxValue={max}
-        onChangeMinLabelValue={setMin}
-        onChangeMaxLabelValue={setMax}
+        rangeValues={[min, max]}
+        onUpdateRangeValue={handleOnUpdateRangeValue}
         onChangeMinBulletValue={onChangeMinBulletValue}
         onChangeMaxBulletValue={onChangeMaxBulletValue}
       />
