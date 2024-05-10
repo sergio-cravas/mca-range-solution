@@ -1,19 +1,14 @@
+@import '@/shared/styles/mixins.scss';
+
 .home {
-  width: 100%;
-
-  padding: 4rem 8rem;
-
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
+  @include page-container;
 
   &__title {
-    margin-bottom: 1rem;
+    @include page-title;
   }
 
   &__description {
-    margin-bottom: 3rem;
+    @include page-description;
   }
 
   &__solution-links {

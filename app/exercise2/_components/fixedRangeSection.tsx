@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 
 import { StepRange } from '@/shared/components/StepRange/stepRange.component';
 
-import styles from '../page.module.scss';
+import styles from './fixedRangeSection.module.scss';
 
 type Props = {
   rangeValues: number[];
@@ -22,7 +22,7 @@ const FixedRangeSection = ({ rangeValues }: Props) => {
   }, []);
 
   return (
-    <div className={styles['excercise2__solution-links']}>
+    <div className={styles['fixed-range-section']}>
       <StepRange
         label="Price range"
         rangeValues={rangeValues}
