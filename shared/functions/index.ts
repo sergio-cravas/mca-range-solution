@@ -1,3 +1,4 @@
 export * from './getClosestValueInArray';
 export * from './getRealThumbValue';
-export * from './getThumbPositionRelativeToRangeInput';
+export * from './getRelativeThumbValue';
+export * from './getRelativeThumbPositionWithUserClick';

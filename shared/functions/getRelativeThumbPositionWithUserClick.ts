@@ -1,4 +1,7 @@
-const getThumbPositionRelativeToRangeSlider = (
+/**
+ * Return de relative position of the thumb over the rangeInput in a % value using the user's mouse clientX movement.
+ */
+const getRelativeThumbPositionWithUserClick = (
   thumb: HTMLDivElement,
   rangeInput: HTMLDivElement,
   clickPosition: number
@@ -8,8 +11,7 @@ const getThumbPositionRelativeToRangeSlider = (
   const initialPosition = rangeInput.getBoundingClientRect().left;
 
   let finalPosition = Math.round(((clickPosition - initialPosition - thumbHalfWidth) / sliderWidth) * 100);
-
   return finalPosition;
 };
 
-export { getThumbPositionRelativeToRangeSlider };
+export { getRelativeThumbPositionWithUserClick };

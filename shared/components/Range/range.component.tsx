@@ -4,14 +4,19 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import debounce from 'lodash.debounce';
 
-import { getRealThumbValue, getThumbPositionRelativeToRangeSlider, getClosestValueInArray } from '@/shared/functions';
+import {
+  getRealThumbValue,
+  getRelativeThumbPositionWithUserClick,
+  getClosestValueInArray,
+  getRelativeThumbValue,
+} from '@/shared/functions';
 
 import styles from './range.module.scss';
 
 const DEFAULT_RANGE_VALUES = [0, 50, 100];
 
 type Props = {
-  label: string;
+  label?: string;
   rangeValues: number[];
   isFixedRange?: boolean;
   onUpdateRangeValue?: (prevIndex: number, newValue: number) => void;
@@ -20,7 +25,7 @@ type Props = {
 };
 
 const Range = ({
-  label,
+  label = '',
   rangeValues = DEFAULT_RANGE_VALUES,
   isFixedRange,
   onUpdateRangeValue,
@@ -32,15 +37,39 @@ const Range = ({
   const minThumbRef = useRef<HTMLDivElement>(null);
   const maxThumbRef = useRef<HTMLDivElement>(null);
 
+  /**
+   * Real min value of the range. E.g.: 1.99
+   */
   const minValue = useMemo(() => rangeValues[0], [rangeValues]);
+  /**
+   * Real max value of the range. E.g.: 99.99
+   */
   const maxValue = useMemo(() => rangeValues[rangeValues.length - 1], [rangeValues]);
+  /**
+   * Real current range for showing it on html attributes. E.g.: [1.99, 99.99]
+   */
   const [currentValue, setCurrentValue] = useState<[number, number]>([minValue, maxValue]);
 
   const [isDraggingMin, setIsDraggingMin] = useState<boolean>(false);
   const [isDraggingMax, setIsDraggingMax] = useState<boolean>(false);
 
+  /**
+   * Real min thumb value over the range between min and max values. E.g.: 40.95
+   */
   const [minThumbValue, setMinThumbValue] = useState<number>(minValue);
+  /**
+   * Real max thumb value over the range between min and max values. E.g.: 80
+   */
   const [maxThumbValue, setMaxThumbValue] = useState<number>(maxValue);
+
+  /**
+   * Relative min thumb value over the range between min and max values. E.g.: 40.95
+   */
+  const [relativeMinThumbValue, setRelativeMinThumbValue] = useState<number>(0);
+  /**
+   * Relative max thumb value over the range between min and max values. E.g.: 80
+   */
+  const [relativeMaxThumbValue, setRelativeMaxThumbValue] = useState<number>(100);
 
   /**
    * Update the minimum thumb position to the value from 0% to 100% (or maxThumbRelativeValue)
@@ -48,19 +77,20 @@ const Range = ({
   const updateMinThumbPosition = useCallback(
     (valueRelativeToRange: number) => {
       const minRangeValue = 0;
-      const maxRangeValue = Math.min(maxThumbValue, 100);
+      const maxRangeValue = Math.min(relativeMaxThumbValue, 100);
 
       valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
       valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
 
-      const numToSendRounded = getRealThumbValue(maxValue, valueRelativeToRange);
+      const numToSendRounded = getRealThumbValue(minValue, maxValue, valueRelativeToRange);
 
-      setMinThumbValue(valueRelativeToRange);
+      setMinThumbValue(numToSendRounded);
+      setRelativeMinThumbValue(valueRelativeToRange);
       setCurrentValue((prev) => [numToSendRounded, prev[1]]);
 
       onChangeMinThumbValue(numToSendRounded);
     },
-    [maxThumbValue, maxValue, onChangeMinThumbValue]
+    [relativeMaxThumbValue, minValue, maxValue, onChangeMinThumbValue]
   );
 
   /**
@@ -68,20 +98,21 @@ const Range = ({
    */
   const updateMaxThumbPosition = useCallback(
     (valueRelativeToRange: number) => {
-      const minRangeValue = Math.max(0, minThumbValue);
+      const minRangeValue = Math.max(0, relativeMinThumbValue);
       const maxRangeValue = 100;
 
       valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
       valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
 
-      const numToSendRounded = getRealThumbValue(maxValue, valueRelativeToRange);
+      const numToSendRounded = getRealThumbValue(minValue, maxValue, valueRelativeToRange);
 
-      setMaxThumbValue(valueRelativeToRange);
+      setMaxThumbValue(numToSendRounded);
+      setRelativeMaxThumbValue(valueRelativeToRange);
       setCurrentValue((prev) => [prev[0], numToSendRounded]);
 
       onChangeMaxThumbValue(numToSendRounded);
     },
-    [minThumbValue, maxValue, onChangeMaxThumbValue]
+    [relativeMinThumbValue, minValue, maxValue, onChangeMaxThumbValue]
   );
 
   const handleOnMouseMove = useCallback(
@@ -93,12 +124,12 @@ const Range = ({
       if (!rangeInput || !minThumb || !maxThumb) return;
 
       if (thumb === 'min' && isDraggingMin) {
-        let valueRelativeToRange = getThumbPositionRelativeToRangeSlider(minThumb, rangeInput, event.clientX);
+        let valueRelativeToRange = getRelativeThumbPositionWithUserClick(minThumb, rangeInput, event.clientX);
         updateMinThumbPosition(valueRelativeToRange);
       }
 
       if (thumb === 'max' && isDraggingMax) {
-        let valueRelativeToRange = getThumbPositionRelativeToRangeSlider(maxThumb, rangeInput, event.clientX);
+        let valueRelativeToRange = getRelativeThumbPositionWithUserClick(maxThumb, rangeInput, event.clientX);
         updateMaxThumbPosition(valueRelativeToRange);
       }
     },
@@ -120,12 +151,16 @@ const Range = ({
   const handleOnEndDragging = useCallback(() => {
     if (isDraggingMin && isFixedRange) {
       const newValue = getClosestValueInArray(minThumbValue, rangeValues);
-      updateMinThumbPosition(newValue);
+      const relativeNewValue = getRelativeThumbValue(minValue, maxValue, newValue);
+
+      updateMinThumbPosition(relativeNewValue);
     }
 
     if (isDraggingMax && isFixedRange) {
       const newValue = getClosestValueInArray(maxThumbValue, rangeValues);
-      updateMaxThumbPosition(newValue);
+      const relativeNewValue = getRelativeThumbValue(minValue, maxValue, newValue);
+
+      updateMaxThumbPosition(relativeNewValue);
     }
 
     setIsDraggingMin(false);
@@ -133,6 +168,8 @@ const Range = ({
   }, [
     rangeValues,
     isFixedRange,
+    minValue,
+    maxValue,
     isDraggingMin,
     isDraggingMax,
     minThumbValue,
@@ -172,7 +209,7 @@ const Range = ({
       >
         <div
           className={styles['range__input__selection']}
-          style={{ left: `${minThumbValue}%`, width: `calc(${maxThumbValue}% - ${minThumbValue}%)` }}
+          style={{ left: `${relativeMinThumbValue}%`, width: `calc(${relativeMaxThumbValue}% - ${relativeMinThumbValue}%)` }}
         />
 
         <div
@@ -180,7 +217,7 @@ const Range = ({
           aria-label="Minimum thumb"
           ref={minThumbRef}
           className={styles['range__input__thumb']}
-          style={{ left: `${minThumbValue}%` }}
+          style={{ left: `${relativeMinThumbValue}%` }}
           onMouseMove={(event) => handleOnMouseMove(event, 'min')}
           onMouseDown={(event) => handleOnStartDragging(event, 'min')}
         />
@@ -190,7 +227,7 @@ const Range = ({
           aria-label="Maximum thumb"
           ref={maxThumbRef}
           className={styles['range__input__thumb']}
-          style={{ left: `${maxThumbValue}%` }}
+          style={{ left: `${relativeMaxThumbValue}%` }}
           onMouseMove={(event) => handleOnMouseMove(event, 'max')}
           onMouseDown={(event) => handleOnStartDragging(event, 'max')}
         />
