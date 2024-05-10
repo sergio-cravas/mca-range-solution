@@ -1,102 +1,149 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+'use client';
 
-import { getRealBulletValue, getBulletPositionRelativeToRangeSlider } from '@/shared/functions';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+
+import debounce from 'lodash.debounce';
+
+import { getRealThumbValue, getThumbPositionRelativeToRangeSlider, getClosestValueInArray } from '@/shared/functions';
 
 import styles from './range.module.scss';
 
-const DEFAULT_MIN_RANGE = 0;
-const DEFAULT_MAX_RANGE = 100;
+const DEFAULT_RANGE_VALUES = [0, 50, 100];
 
 type Props = {
   label: string;
-  minValue: number;
-  maxValue: number;
-  onChangeMinLabelValue: (value: number) => void;
-  onChangeMaxLabelValue: (value: number) => void;
-  onChangeMinBulletValue: (min: number) => void;
-  onChangeMaxBulletValue: (max: number) => void;
+  rangeValues: number[];
+  isFixedRange?: boolean;
+  onUpdateRangeValue?: (prevIndex: number, newValue: number) => void;
+  onChangeMinThumbValue: (min: number) => void;
+  onChangeMaxThumbValue: (max: number) => void;
 };
 
 const Range = ({
   label,
-  minValue = DEFAULT_MIN_RANGE,
-  maxValue = DEFAULT_MAX_RANGE,
-  onChangeMinLabelValue,
-  onChangeMaxLabelValue,
-  onChangeMinBulletValue,
-  onChangeMaxBulletValue,
+  rangeValues = DEFAULT_RANGE_VALUES,
+  isFixedRange,
+  onUpdateRangeValue,
+  onChangeMinThumbValue,
+  onChangeMaxThumbValue,
 }: Props) => {
-  const inputRef = useRef<HTMLDivElement>(null);
-  const minBulletRef = useRef<HTMLDivElement>(null);
-  const maxBulletRef = useRef<HTMLDivElement>(null);
+  const rangeLabelId = useId();
+  const rangeRef = useRef<HTMLDivElement>(null);
+  const minThumbRef = useRef<HTMLDivElement>(null);
+  const maxThumbRef = useRef<HTMLDivElement>(null);
 
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [minBulletValue, setMinBulletValue] = useState<number>(minValue);
-  const [maxBulletValue, setMaxBulletValue] = useState<number>(maxValue);
+  const minValue = useMemo(() => rangeValues[0], [rangeValues]);
+  const maxValue = useMemo(() => rangeValues[rangeValues.length - 1], [rangeValues]);
+  const [currentValue, setCurrentValue] = useState<[number, number]>([minValue, maxValue]);
 
-  const updateMinBulletPosition = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      const rangeInput = inputRef.current;
-      const minBullet = minBulletRef.current;
+  const [isDraggingMin, setIsDraggingMin] = useState<boolean>(false);
+  const [isDraggingMax, setIsDraggingMax] = useState<boolean>(false);
 
-      if (isDragging && rangeInput && minBullet) {
-        let valueRelativeToRange = getBulletPositionRelativeToRangeSlider(minBullet, rangeInput, event.clientX);
+  const [minThumbValue, setMinThumbValue] = useState<number>(minValue);
+  const [maxThumbValue, setMaxThumbValue] = useState<number>(maxValue);
 
-        const minRangeValue = minValue;
-        const maxRangeValue = Math.min(maxBulletValue, maxValue);
+  /**
+   * Update the minimum thumb position to the value from 0% to 100% (or maxThumbRelativeValue)
+   */
+  const updateMinThumbPosition = useCallback(
+    (valueRelativeToRange: number) => {
+      const minRangeValue = 0;
+      const maxRangeValue = Math.min(maxThumbValue, 100);
 
-        valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
-        valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
+      valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
+      valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
 
-        const numToSendRounded = getRealBulletValue(maxValue, valueRelativeToRange);
+      const numToSendRounded = getRealThumbValue(maxValue, valueRelativeToRange);
 
-        onChangeMinBulletValue(numToSendRounded);
-        setMinBulletValue(valueRelativeToRange);
-      }
+      setMinThumbValue(valueRelativeToRange);
+      setCurrentValue((prev) => [numToSendRounded, prev[1]]);
+
+      onChangeMinThumbValue(numToSendRounded);
     },
-    [isDragging, maxBulletValue, minValue, maxValue, onChangeMinBulletValue]
+    [maxThumbValue, maxValue, onChangeMinThumbValue]
   );
 
-  const updateMaxBulletPosition = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      const rangeInput = inputRef.current;
-      const maxBullet = maxBulletRef.current;
+  /**
+   * Update the maximum thumb position to the value from 0% (or minThumbRelativeValue) to 100%
+   */
+  const updateMaxThumbPosition = useCallback(
+    (valueRelativeToRange: number) => {
+      const minRangeValue = Math.max(0, minThumbValue);
+      const maxRangeValue = 100;
 
-      if (isDragging && rangeInput && maxBullet) {
-        let valueRelativeToRange = getBulletPositionRelativeToRangeSlider(maxBullet, rangeInput, event.clientX);
+      valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
+      valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
 
-        const minRangeValue = Math.max(minValue, minBulletValue);
-        const maxRangeValue = maxValue;
+      const numToSendRounded = getRealThumbValue(maxValue, valueRelativeToRange);
 
-        valueRelativeToRange = Math.max(minRangeValue, valueRelativeToRange);
-        valueRelativeToRange = Math.min(maxRangeValue, valueRelativeToRange);
+      setMaxThumbValue(valueRelativeToRange);
+      setCurrentValue((prev) => [prev[0], numToSendRounded]);
 
-        const numToSend = (maxValue * (valueRelativeToRange / 100)) / 1;
-        const numToSendRounded = Math.round(numToSend * 100) / 100;
+      onChangeMaxThumbValue(numToSendRounded);
+    },
+    [minThumbValue, maxValue, onChangeMaxThumbValue]
+  );
 
-        onChangeMaxBulletValue(numToSendRounded);
+  const handleOnMouseMove = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>, thumb: 'min' | 'max') => {
+      const rangeInput = rangeRef.current;
+      const minThumb = minThumbRef.current;
+      const maxThumb = maxThumbRef.current;
 
-        setMaxBulletValue(valueRelativeToRange);
+      if (!rangeInput || !minThumb || !maxThumb) return;
+
+      if (thumb === 'min' && isDraggingMin) {
+        let valueRelativeToRange = getThumbPositionRelativeToRangeSlider(minThumb, rangeInput, event.clientX);
+        updateMinThumbPosition(valueRelativeToRange);
+      }
+
+      if (thumb === 'max' && isDraggingMax) {
+        let valueRelativeToRange = getThumbPositionRelativeToRangeSlider(maxThumb, rangeInput, event.clientX);
+        updateMaxThumbPosition(valueRelativeToRange);
       }
     },
-    [isDragging, minBulletValue, minValue, maxValue, onChangeMaxBulletValue]
+    [isDraggingMax, isDraggingMin, updateMaxThumbPosition, updateMinThumbPosition]
   );
 
   const handleOnStartDragging = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>, bullet: 'min' | 'max') => {
-      setIsDragging(true);
+    (event: React.MouseEvent<HTMLDivElement>, thumb: 'min' | 'max') => {
+      if (thumb === 'min') setIsDraggingMin(true);
+      else setIsDraggingMax(true);
 
-      if (bullet === 'min') updateMinBulletPosition(event);
-      else updateMaxBulletPosition(event);
+      handleOnMouseMove(event, thumb);
 
       event.preventDefault();
     },
-    [updateMaxBulletPosition, updateMinBulletPosition]
+    [handleOnMouseMove]
   );
 
   const handleOnEndDragging = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+    if (isDraggingMin && isFixedRange) {
+      const newValue = getClosestValueInArray(minThumbValue, rangeValues);
+      updateMinThumbPosition(newValue);
+    }
+
+    if (isDraggingMax && isFixedRange) {
+      const newValue = getClosestValueInArray(maxThumbValue, rangeValues);
+      updateMaxThumbPosition(newValue);
+    }
+
+    setIsDraggingMin(false);
+    setIsDraggingMax(false);
+  }, [
+    rangeValues,
+    isFixedRange,
+    isDraggingMin,
+    isDraggingMax,
+    minThumbValue,
+    maxThumbValue,
+    updateMinThumbPosition,
+    updateMaxThumbPosition,
+  ]);
+
+  const handleOnUpdateRangeValue = debounce((index: number, value) => {
+    onUpdateRangeValue && onUpdateRangeValue(index, value);
+  }, 250);
 
   useEffect(() => {
     document.addEventListener('mouseup', handleOnEndDragging);
@@ -106,58 +153,71 @@ const Range = ({
     };
   }, [handleOnEndDragging]);
 
-  const handleOnChangeMinLabelValue = (value: number) => {
-    onChangeMinLabelValue(value);
-  };
-
-  const handleOnChangeMaxLabelValue = (value: number) => {
-    onChangeMaxLabelValue(value);
-  };
-
   return (
-    <div className={styles.range}>
-      <label className={styles.range__label}>{label}</label>
+    <div className={styles['range']}>
+      <label id={rangeLabelId} className={styles['range__label']}>
+        {label}
+      </label>
 
-      <div ref={inputRef} className={styles.range__input}>
+      <div
+        ref={rangeRef}
+        className={styles['range__input']}
+        // aria-valuenow is not necessary due to aria-valuetext
+        // eslint-disable-next-line jsx-a11y/role-has-required-aria-props
+        role="slider"
+        aria-valuemin={minValue}
+        aria-valuemax={maxValue}
+        aria-valuetext={`Range between ${currentValue[0]} and ${currentValue[1]}`}
+        aria-labelledby={rangeLabelId}
+      >
         <div
-          className={styles.range__input__selection}
-          style={{ left: `${minBulletValue}%`, width: `calc(${maxBulletValue}% - ${minBulletValue}%)` }}
+          className={styles['range__input__selection']}
+          style={{ left: `${minThumbValue}%`, width: `calc(${maxThumbValue}% - ${minThumbValue}%)` }}
         />
 
         <div
-          ref={minBulletRef}
-          className={styles.range__input__bullet}
-          style={{ left: `${minBulletValue}%` }}
+          data-testid="minimum-thumb"
+          aria-label="Minimum thumb"
+          ref={minThumbRef}
+          className={styles['range__input__thumb']}
+          style={{ left: `${minThumbValue}%` }}
+          onMouseMove={(event) => handleOnMouseMove(event, 'min')}
           onMouseDown={(event) => handleOnStartDragging(event, 'min')}
-          onMouseMove={updateMinBulletPosition}
         />
 
         <div
-          ref={maxBulletRef}
-          className={styles.range__input__bullet}
-          style={{ left: `${maxBulletValue}%` }}
+          data-testid="maximum-thumb"
+          aria-label="Maximum thumb"
+          ref={maxThumbRef}
+          className={styles['range__input__thumb']}
+          style={{ left: `${maxThumbValue}%` }}
+          onMouseMove={(event) => handleOnMouseMove(event, 'max')}
           onMouseDown={(event) => handleOnStartDragging(event, 'max')}
-          onMouseMove={updateMaxBulletPosition}
         />
       </div>
 
       <div className={styles['range__input__range-values']}>
-        <input
-          className={styles['range__input__range-values__input']}
-          type="number"
-          min={0}
-          max={maxValue}
-          value={minValue}
-          onChange={(event) => handleOnChangeMinLabelValue(+event.target.value)}
-        />
-
-        <input
-          className={styles['range__input__range-values__input']}
-          type="number"
-          min={minValue}
-          value={maxValue}
-          onChange={(event) => handleOnChangeMaxLabelValue(+event.target.value)}
-        />
+        {rangeValues.map((rangeValue: number, index, list) =>
+          Boolean(onUpdateRangeValue) ? (
+            <input
+              key={`range__value-${rangeValue}`}
+              className={styles['range__input__range-values__input']}
+              type="number"
+              min={list[index - 1] || 0}
+              max={list[index + 1] || undefined}
+              defaultValue={rangeValue}
+              onChange={(event) => handleOnUpdateRangeValue(index, +event.target.value)}
+            />
+          ) : (
+            <label
+              key={`range__value-${rangeValue}`}
+              className={styles['range__input__range-values__label']}
+              style={{ left: `${Math.round((rangeValue * 100) / maxValue)}%` }}
+            >
+              {rangeValue}
+            </label>
+          )
+        )}
       </div>
     </div>
   );

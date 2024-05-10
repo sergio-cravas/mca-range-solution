@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
-import { StepRange } from '@/shared/components/StepRange/stepRange.component';
+import { Range } from '@/shared/components';
 
 import styles from './fixedRangeSection.module.scss';
 
@@ -13,21 +13,22 @@ type Props = {
 const FixedRangeSection = ({ rangeValues }: Props) => {
   const [range, setRange] = useState<[number, number]>([0, 100]);
 
-  const onChangeMinBulletValue = useCallback((value: number) => {
+  const onChangeMinThumbValue = useCallback((value: number) => {
     setRange((prev) => [value, prev[1]]);
   }, []);
 
-  const onChangeMaxBulletValue = useCallback((value: number) => {
+  const onChangeMaxThumbValue = useCallback((value: number) => {
     setRange((prev) => [prev[0], value]);
   }, []);
 
   return (
     <div className={styles['fixed-range-section']}>
-      <StepRange
+      <Range
+        isFixedRange
         label="Price range"
         rangeValues={rangeValues}
-        onChangeMinBulletValue={onChangeMinBulletValue}
-        onChangeMaxBulletValue={onChangeMaxBulletValue}
+        onChangeMinThumbValue={onChangeMinThumbValue}
+        onChangeMaxThumbValue={onChangeMaxThumbValue}
       />
 
       <div>
