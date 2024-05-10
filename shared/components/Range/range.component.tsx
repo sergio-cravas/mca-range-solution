@@ -176,6 +176,7 @@ const Range = ({
         />
 
         <div
+          data-testid="minimum-thumb"
           aria-label="Minimum thumb"
           ref={minThumbRef}
           className={styles['range__input__thumb']}
@@ -185,6 +186,7 @@ const Range = ({
         />
 
         <div
+          data-testid="maximum-thumb"
           aria-label="Maximum thumb"
           ref={maxThumbRef}
           className={styles['range__input__thumb']}
