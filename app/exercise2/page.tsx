@@ -22,7 +22,7 @@ export default async function Page() {
 
       <ul className={styles.excercise2__description}>
         On this excercise, the objective is to create a custom input range (without using any HTML range input tag) with two
-        bullets, one for a min value and another for the max value.
+        thumbs, one for a min value and another for the max value.
       </ul>
 
       <FixedRangeSection rangeValues={rangeValues} />

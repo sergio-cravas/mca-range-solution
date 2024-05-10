@@ -13,11 +13,11 @@ type Props = {
 const FixedRangeSection = ({ rangeValues }: Props) => {
   const [range, setRange] = useState<[number, number]>([0, 100]);
 
-  const onChangeMinBulletValue = useCallback((value: number) => {
+  const onChangeMinThumbValue = useCallback((value: number) => {
     setRange((prev) => [value, prev[1]]);
   }, []);
 
-  const onChangeMaxBulletValue = useCallback((value: number) => {
+  const onChangeMaxThumbValue = useCallback((value: number) => {
     setRange((prev) => [prev[0], value]);
   }, []);
 
@@ -27,8 +27,8 @@ const FixedRangeSection = ({ rangeValues }: Props) => {
         isFixedRange
         label="Price range"
         rangeValues={rangeValues}
-        onChangeMinBulletValue={onChangeMinBulletValue}
-        onChangeMaxBulletValue={onChangeMaxBulletValue}
+        onChangeMinThumbValue={onChangeMinThumbValue}
+        onChangeMaxThumbValue={onChangeMaxThumbValue}
       />
 
       <div>

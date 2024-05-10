@@ -17,11 +17,11 @@ const NormalRangeSection = ({ min: defaultMin, max: defaultMax }: Props) => {
 
   const [range, setRange] = useState<[number, number]>([defaultMin, defaultMax]);
 
-  const onChangeMinBulletValue = useCallback((value: number) => {
+  const onChangeMinThumbValue = useCallback((value: number) => {
     setRange((prev) => [value, prev[1]]);
   }, []);
 
-  const onChangeMaxBulletValue = useCallback((value: number) => {
+  const onChangeMaxThumbValue = useCallback((value: number) => {
     setRange((prev) => [prev[0], value]);
   }, []);
 
@@ -36,8 +36,8 @@ const NormalRangeSection = ({ min: defaultMin, max: defaultMax }: Props) => {
         label="Price range"
         rangeValues={[min, max]}
         onUpdateRangeValue={handleOnUpdateRangeValue}
-        onChangeMinBulletValue={onChangeMinBulletValue}
-        onChangeMaxBulletValue={onChangeMaxBulletValue}
+        onChangeMinThumbValue={onChangeMinThumbValue}
+        onChangeMaxThumbValue={onChangeMaxThumbValue}
       />
 
       <div>
