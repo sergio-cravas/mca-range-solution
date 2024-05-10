@@ -9,9 +9,7 @@ const getRangeValuesData = async () => {
     return response.json();
   });
 
-  const formattedRangeValues = JSON.parse(response?.rangeValues);
-
-  return { rangeValues: formattedRangeValues || [0, 100] };
+  return { rangeValues: response?.rangeValues || [0, 100] };
 };
 
 export default async function Page() {

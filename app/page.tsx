@@ -1,4 +1,6 @@
-import Link from 'next/link';
+import { GithubIcon, LinkedinIcon } from '@/shared/assets/icons';
+import { ButtonLink } from '@/shared/components/Link/buttonLink.component';
+
 import styles from './page.module.scss';
 
 export default function Page() {
@@ -12,9 +14,19 @@ export default function Page() {
       </p>
 
       <div className={styles['home__solution-links']}>
-        <Link href="/exercise1">Solución 1</Link>
+        <ButtonLink
+          text="Source code"
+          target="_blank"
+          icon={<GithubIcon size={24} color="#ffffff" />}
+          href="https://github.com/sergio-cravas/mca-range-solution"
+        />
 
-        <Link href="/exercise2">Solución 2</Link>
+        <ButtonLink
+          text="Linkedin"
+          target="_blank"
+          icon={<LinkedinIcon size={24} color="#ffffff" />}
+          href="https://www.linkedin.com/in/sergio-cerda-hervas/"
+        />
       </div>
     </div>
   );
