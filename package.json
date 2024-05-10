@@ -2,9 +2,8 @@
   "name": "mca-range-solution",
   "version": "1.0.0",
   "description": "My solution for the technical interview project at MCA Spain",
-  "main": "index.ts",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 8080",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -14,11 +13,14 @@
   "devDependencies": {
     "@types/node": "20.12.11",
     "@types/react": "18.3.1",
-    "typescript": "^5.4.5"
+    "eslint-config-next": "14.2.3",
+    "typescript": "5.4.5"
   },
   "dependencies": {
-    "next": "^14.2.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "eslint": "8.0.0",
+    "next": "14.2.3",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "sass": "1.77.0"
   }
 }

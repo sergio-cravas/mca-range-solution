@@ -1,0 +1,22 @@
+@import '@/shared/styles/colors.scss';
+
+.header {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 2rem;
+  padding: 2rem;
+
+  &__link {
+    font-weight: 500;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid transparent;
+
+    transition: border-bottom-color 0.15s;
+
+    &:hover {
+      border-bottom-color: $white;
+    }
+  }
+}
