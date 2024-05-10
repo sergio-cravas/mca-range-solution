@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 
 import { Range } from '@/shared/components/Range/range.component';
 
-import styles from '../page.module.scss';
+import styles from './normalRangeSection.module.scss';
 
 type Props = {
   min: number;
@@ -26,7 +26,7 @@ const NormalRangeSection = ({ min: defaultMin, max: defaultMax }: Props) => {
   }, []);
 
   return (
-    <div className={styles['excercise1__solution-links']}>
+    <div className={styles['normal-range-section']}>
       <Range
         label="Price range"
         minValue={min}
