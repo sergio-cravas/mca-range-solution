@@ -9,6 +9,12 @@ const inter = Inter({
   display: 'swap',
 });
 
+export const metadata = {
+  title: 'Range Input | MCA',
+  description:
+    'Custom range input component without input html tags. Made for a technical interview for MCA Spain by Sergio Cerdá Hervás.',
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.className}>

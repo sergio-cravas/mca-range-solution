@@ -1,0 +1,12 @@
+@import '@/shared/styles/mixins.scss';
+
+.home-range {
+  width: 400px;
+  max-width: 90%;
+
+  margin-bottom: 4rem;
+
+  @media (min-width: 720px) {
+    max-width: unset;
+  }
+}

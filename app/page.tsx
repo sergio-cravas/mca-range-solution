@@ -1,16 +1,25 @@
 import { ButtonLink } from '@/shared/components';
 import { GithubIcon, LinkedinIcon } from '@/shared/assets/icons';
 
+import { HomeRange } from './_components/homeRange.component';
+
 import styles from './page.module.scss';
 
 export default function Page() {
   return (
     <div className={styles.home}>
-      <h1 className={styles.home__title}>Range component selector</h1>
+      <h1 className={styles.home__title}>Range Input</h1>
+
+      <HomeRange />
 
       <p className={styles.home__description}>
-        Hi, I&apos;m Sergio! And wellcome to my technical interview solution for MCA Spain. Below you have the access for the
-        two versions of my project:
+        {`Hi, I'm Sergio! Wellcome to my solution of the technical test on MCA Spain. You can use the header links for navigate around the page and visit the two solutions of the excercises requested on the test.`}
+        <br />
+        <br />
+        {`Also, you can use the two buttons below for visit the source code of this project and my Linkedin profile if you want to know more about my work.`}
+        <br />
+        <br />
+        {`Greetings and have a nice day!`}
       </p>
 
       <div className={styles['home__solution-links']}>

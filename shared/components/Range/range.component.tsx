@@ -11,7 +11,7 @@ import styles from './range.module.scss';
 const DEFAULT_RANGE_VALUES = [0, 50, 100];
 
 type Props = {
-  label: string;
+  label?: string;
   rangeValues: number[];
   isFixedRange?: boolean;
   onUpdateRangeValue?: (prevIndex: number, newValue: number) => void;
@@ -20,7 +20,7 @@ type Props = {
 };
 
 const Range = ({
-  label,
+  label = '',
   rangeValues = DEFAULT_RANGE_VALUES,
   isFixedRange,
   onUpdateRangeValue,
