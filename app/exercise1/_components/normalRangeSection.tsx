@@ -41,7 +41,7 @@ const NormalRangeSection = ({ min: defaultMin, max: defaultMax }: Props) => {
       />
 
       <div>
-        <strong>Range selected:</strong> From {range[0]} to {range[1]}
+        <strong>Range selected:</strong> From {range[0]}€ to {range[1]}€
       </div>
     </div>
   );
