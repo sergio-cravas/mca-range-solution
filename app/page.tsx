@@ -13,7 +13,7 @@ export default function Page() {
       <HomeRange />
 
       <p className={styles.home__description}>
-        {`Hi, I'm Sergio! Wellcome to my solution of the technical test on MCA Spain. You can use the header links for navigate around the page and visit the two solutions of the excercises requested on the test.`}
+        {`Hi, I'm Sergio! Welcome to my solution of the technical test on MCA Spain. You can use the header links for navigate around the page and visit the two solutions of the exercises requested on the test.`}
         <br />
         <br />
         {`Also, you can use the two buttons below for visit the source code of this project and my Linkedin profile if you want to know more about my work.`}

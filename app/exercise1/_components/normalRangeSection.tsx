@@ -40,7 +40,7 @@ const NormalRangeSection = ({ min: defaultMin, max: defaultMax }: Props) => {
         onChangeMaxThumbValue={onChangeMaxThumbValue}
       />
 
-      <div>
+      <div className={styles['normal-range-section__range-selected']}>
         <strong>Range selected:</strong> From {range[0]}€ to {range[1]}€
       </div>
     </div>

@@ -17,13 +17,13 @@ export default async function Page() {
   const { rangeValues } = await getRangeValuesData();
 
   return (
-    <div className={styles.excercise2}>
-      <h1 className={styles.excercise2__title}>Fixed Values Range</h1>
+    <div className={styles.exercise2}>
+      <h1 className={styles.exercise2__title}>Fixed Values Range</h1>
 
-      <ul className={styles.excercise2__description}>
-        On this excercise, the objective is to create a custom input range (without using any HTML range input tag) with two
+      <p className={styles.exercise2__description}>
+        On this exercise, the objective is to create a custom input range (without using any HTML range input tag) with two
         thumbs, one for a min value and another for the max value.
-      </ul>
+      </p>
 
       <FixedRangeSection rangeValues={rangeValues} />
     </div>

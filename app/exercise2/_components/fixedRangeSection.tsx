@@ -31,7 +31,7 @@ const FixedRangeSection = ({ rangeValues }: Props) => {
         onChangeMaxThumbValue={onChangeMaxThumbValue}
       />
 
-      <div>
+      <div className={styles['fixed-range-section__range-selected']}>
         <strong>Range selected:</strong> From {range[0]}€ to {range[1]}€
       </div>
     </div>
