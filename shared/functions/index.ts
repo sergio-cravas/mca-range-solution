@@ -1,3 +1,3 @@
 export * from './getClosestValueInArray';
-export * from './getRealBulletValue';
-export * from './getBulletPositionRelativeToRangeInput';
+export * from './getRealThumbValue';
+export * from './getThumbPositionRelativeToRangeInput';

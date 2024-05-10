@@ -1,5 +1,5 @@
+import { ButtonLink } from '@/shared/components';
 import { GithubIcon, LinkedinIcon } from '@/shared/assets/icons';
-import { ButtonLink } from '@/shared/components/Link/buttonLink.component';
 
 import styles from './page.module.scss';
 

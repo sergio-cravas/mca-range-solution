@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
-import { Range } from '@/shared/components/Range/range.component';
+import { Range } from '@/shared/components';
 
 import styles from './normalRangeSection.module.scss';
 
@@ -17,24 +17,27 @@ const NormalRangeSection = ({ min: defaultMin, max: defaultMax }: Props) => {
 
   const [range, setRange] = useState<[number, number]>([defaultMin, defaultMax]);
 
-  const onChangeMinBulletValue = useCallback((value: number) => {
+  const onChangeMinThumbValue = useCallback((value: number) => {
     setRange((prev) => [value, prev[1]]);
   }, []);
 
-  const onChangeMaxBulletValue = useCallback((value: number) => {
+  const onChangeMaxThumbValue = useCallback((value: number) => {
     setRange((prev) => [prev[0], value]);
   }, []);
+
+  const handleOnUpdateRangeValue = (index: number, value: number) => {
+    if (index === 0) setMin(value);
+    else if (index === 1) setMax(value);
+  };
 
   return (
     <div className={styles['normal-range-section']}>
       <Range
         label="Price range"
-        minValue={min}
-        maxValue={max}
-        onChangeMinLabelValue={setMin}
-        onChangeMaxLabelValue={setMax}
-        onChangeMinBulletValue={onChangeMinBulletValue}
-        onChangeMaxBulletValue={onChangeMaxBulletValue}
+        rangeValues={[min, max]}
+        onUpdateRangeValue={handleOnUpdateRangeValue}
+        onChangeMinThumbValue={onChangeMinThumbValue}
+        onChangeMaxThumbValue={onChangeMaxThumbValue}
       />
 
       <div>
