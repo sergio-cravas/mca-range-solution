@@ -112,20 +112,20 @@ const Range = ({
   );
 
   const handleOnMouseMove = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>, thumb: 'min' | 'max') => {
+    (clientX: number) => {
       const rangeInput = rangeRef.current;
       const minThumb = minThumbRef.current;
       const maxThumb = maxThumbRef.current;
 
       if (!rangeInput || !minThumb || !maxThumb) return;
 
-      if (thumb === 'min' && isDraggingMin) {
-        let valueRelativeToRange = getRelativeThumbPositionWithUserClick(minThumb, rangeInput, event.clientX);
+      if (isDraggingMin) {
+        let valueRelativeToRange = getRelativeThumbPositionWithUserClick(minThumb, rangeInput, clientX);
         updateMinThumbPosition(valueRelativeToRange);
       }
 
-      if (thumb === 'max' && isDraggingMax) {
-        let valueRelativeToRange = getRelativeThumbPositionWithUserClick(maxThumb, rangeInput, event.clientX);
+      if (isDraggingMax) {
+        let valueRelativeToRange = getRelativeThumbPositionWithUserClick(maxThumb, rangeInput, clientX);
         updateMaxThumbPosition(valueRelativeToRange);
       }
     },
@@ -137,7 +137,7 @@ const Range = ({
       if (thumb === 'min') setIsDraggingMin(true);
       else setIsDraggingMax(true);
 
-      handleOnMouseMove(event, thumb);
+      handleOnMouseMove(event.clientX);
 
       event.preventDefault();
     },
@@ -184,10 +184,10 @@ const Range = ({
     return () => {
       document.removeEventListener('mouseup', handleOnEndDragging);
     };
-  }, [handleOnEndDragging]);
+  }, [handleOnEndDragging, handleOnMouseMove]);
 
   return (
-    <div className={styles['range']}>
+    <div className={styles['range']} onMouseMove={(event) => handleOnMouseMove(event.clientX)}>
       <label id={rangeLabelId} className={styles['range__label']}>
         {label}
       </label>
@@ -214,7 +214,6 @@ const Range = ({
           ref={minThumbRef}
           className={styles['range__input__thumb']}
           style={{ left: `${relativeMinThumbValue}%` }}
-          onMouseMove={(event) => handleOnMouseMove(event, 'min')}
           onMouseDown={(event) => handleOnStartDragging(event, 'min')}
         />
 
@@ -224,7 +223,6 @@ const Range = ({
           ref={maxThumbRef}
           className={styles['range__input__thumb']}
           style={{ left: `${relativeMaxThumbValue}%` }}
-          onMouseMove={(event) => handleOnMouseMove(event, 'max')}
           onMouseDown={(event) => handleOnStartDragging(event, 'max')}
         />
       </div>
