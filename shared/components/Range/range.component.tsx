@@ -4,12 +4,8 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import debounce from 'lodash.debounce';
 
-import {
-  getRealThumbValue,
-  getRelativeThumbPositionWithUserClick,
-  getClosestValueInArray,
-  getRelativeThumbValue,
-} from '@/shared/functions';
+import { getClosestValueInArray } from '@/shared/functions';
+import { getRealThumbValue, getRelativeThumbPositionWithUserClick, getRelativeThumbValue } from './functions';
 
 import styles from './range.module.scss';
 
