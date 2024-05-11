@@ -36,14 +36,19 @@
       border-radius: 100%;
       background-color: $accent-color;
 
+      transition: background-color 0.15s, transform 0.15s;
+
       &:hover,
       &:focus {
         cursor: grab;
         background-color: $accent-color-light;
+
+        transform: scale(1.15);
       }
 
       &:active {
         cursor: grabbing;
+        transform: scale(1.15);
       }
     }
 
