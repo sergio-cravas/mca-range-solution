@@ -184,10 +184,10 @@ const Range = ({
     return () => {
       document.removeEventListener('mouseup', handleOnEndDragging);
     };
-  }, [handleOnEndDragging]);
+  }, [handleOnEndDragging, handleOnMouseMove]);
 
   return (
-    <div className={styles['range']}>
+    <div className={styles['range']} onMouseMove={(event) => handleOnMouseMove(event.clientX)}>
       <label id={rangeLabelId} className={styles['range__label']}>
         {label}
       </label>
@@ -214,7 +214,6 @@ const Range = ({
           ref={minThumbRef}
           className={styles['range__input__thumb']}
           style={{ left: `${relativeMinThumbValue}%` }}
-          onMouseMove={(event) => handleOnMouseMove(event.clientX)}
           onMouseDown={(event) => handleOnStartDragging(event, 'min')}
         />
 
@@ -224,7 +223,6 @@ const Range = ({
           ref={maxThumbRef}
           className={styles['range__input__thumb']}
           style={{ left: `${relativeMaxThumbValue}%` }}
-          onMouseMove={(event) => handleOnMouseMove(event.clientX)}
           onMouseDown={(event) => handleOnStartDragging(event, 'max')}
         />
       </div>
