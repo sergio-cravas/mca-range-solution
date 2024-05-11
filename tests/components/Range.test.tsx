@@ -1,9 +1,10 @@
 import React from 'react';
 
 import '@testing-library/jest-dom';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 
 import { Range } from '@/shared/components';
+import { clickAndMoveElement } from '../functions';
 
 test('Renders Range Input', () => {
   const props = {
@@ -23,50 +24,6 @@ test('Renders Range Input', () => {
   component.getByText(props.rangeValues[1]);
 });
 
-test('Can move range input min thumb', () => {
-  const props = {
-    label: 'Range test',
-    rangeValues: [0, 100],
-    onChangeMinThumbValue: jest.fn(),
-    onChangeMaxThumbValue: () => {},
-  };
-
-  const component = render(<Range {...props} />);
-
-  // Find thumbs by test ID
-  const minThumb = component.getByTestId('minimum-thumb');
-
-  // Simulate mouse drag movement
-  fireEvent.mouseDown(minThumb);
-  fireEvent.mouseMove(minThumb, { clientX: 50 });
-  fireEvent.mouseUp(minThumb);
-
-  // Check if onChangeMinThumbValue has been called at least once
-  expect(props.onChangeMinThumbValue).toHaveBeenCalled();
-});
-
-test('Can move range input max thumb', () => {
-  const props = {
-    label: 'Range test',
-    rangeValues: [0, 100],
-    onChangeMinThumbValue: () => {},
-    onChangeMaxThumbValue: jest.fn(),
-  };
-
-  const component = render(<Range {...props} />);
-
-  // Find thumbs by test ID
-  const maxThumb = component.getByTestId('maximum-thumb');
-
-  // Simulate mouse drag movement
-  fireEvent.mouseDown(maxThumb);
-  fireEvent.mouseMove(maxThumb, { clientX: -20 });
-  fireEvent.mouseUp(maxThumb);
-
-  // Check if onChangeMinThumbValue has been called at least once
-  expect(props.onChangeMaxThumbValue).toHaveBeenCalled();
-});
-
 test('Range Input have proper aria label properties', () => {
   const props = {
     label: 'Range test',
@@ -83,4 +40,60 @@ test('Range Input have proper aria label properties', () => {
   expect(rangeInput).toHaveAttribute('aria-valuemin', String(props.rangeValues[0]));
   expect(rangeInput).toHaveAttribute('aria-valuemax', String(props.rangeValues[1]));
   expect(rangeInput).toHaveAttribute('aria-valuetext', `Range between ${props.rangeValues[0]} and ${props.rangeValues[1]}`);
+});
+
+test('Can move range input min thumb', () => {
+  const props = {
+    label: 'Range test',
+    rangeValues: [0, 100],
+    onChangeMinThumbValue: jest.fn(),
+    onChangeMaxThumbValue: () => {},
+  };
+
+  const movement = 100;
+
+  const component = render(<Range {...props} />);
+
+  const rangeInput = component.getByRole('slider');
+  const minThumb = component.getByTestId('minimum-thumb');
+
+  // Simulate mouse drag movement
+  clickAndMoveElement(minThumb, movement);
+
+  // Check if onChangeMinThumbValue has been called at least once
+  expect(props.onChangeMinThumbValue).toHaveBeenCalled();
+
+  // Check if minThumb thumb updated its posiiton
+  expect(rangeInput).toHaveAttribute(
+    'aria-valuetext',
+    `Range between ${props.rangeValues[0] + movement} and ${props.rangeValues[1]}`
+  );
+});
+
+test('Can move range input max thumb', () => {
+  const props = {
+    label: 'Range test',
+    rangeValues: [0, 100],
+    onChangeMinThumbValue: () => {},
+    onChangeMaxThumbValue: jest.fn(),
+  };
+
+  const movement = -100;
+
+  const component = render(<Range {...props} />);
+
+  const rangeInput = component.getByRole('slider');
+  const maxThumb = component.getByTestId('maximum-thumb');
+
+  // Simulate mouse drag movement
+  clickAndMoveElement(maxThumb, movement);
+
+  // Check if onChangeMinThumbValue has been called at least once
+  expect(props.onChangeMaxThumbValue).toHaveBeenCalled();
+
+  // Check if max thumb updated its posiiton
+  expect(rangeInput).toHaveAttribute(
+    'aria-valuetext',
+    `Range between ${props.rangeValues[0]} and ${props.rangeValues[1] + movement}`
+  );
 });
