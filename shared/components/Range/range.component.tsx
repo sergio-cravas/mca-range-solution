@@ -249,7 +249,7 @@ const Range = ({
         {rangeValues.map((rangeValue: number, index, list) =>
           Boolean(onUpdateRangeValue) ? (
             <input
-              key={`range__value-${rangeValue}`}
+              key={`range__value-${index}`}
               className={styles['range__input__range-values__input']}
               type="number"
               min={list[index - 1] || 0}
@@ -259,7 +259,7 @@ const Range = ({
             />
           ) : (
             <label
-              key={`range__value-${rangeValue}`}
+              key={`range__value-${index}`}
               className={styles['range__input__range-values__label']}
               style={{ left: `${Math.round((rangeValue * 100) / maxValue)}%` }}
             >
