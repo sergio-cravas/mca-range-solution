@@ -223,10 +223,7 @@ const Range = ({
             event.preventDefault();
             handleOnMoveStartThumb(event.clientX, 'min');
           }}
-          onTouchStart={(event) => {
-            event.preventDefault();
-            handleOnMoveStartThumb(event.touches?.[0]?.clientX, 'min');
-          }}
+          onTouchStart={(event) => handleOnMoveStartThumb(event.touches?.[0]?.clientX, 'min')}
         />
 
         <div
@@ -239,10 +236,7 @@ const Range = ({
             event.preventDefault();
             handleOnMoveStartThumb(event.clientX, 'max');
           }}
-          onTouchStart={(event) => {
-            event.preventDefault();
-            handleOnMoveStartThumb(event.touches?.[0]?.clientX, 'max');
-          }}
+          onTouchStart={(event) => handleOnMoveStartThumb(event.touches?.[0]?.clientX, 'max')}
         />
       </div>
 
