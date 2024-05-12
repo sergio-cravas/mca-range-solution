@@ -132,7 +132,7 @@ const Range = ({
     [isDraggingMax, isDraggingMin, updateMaxThumbPosition, updateMinThumbPosition]
   );
 
-  const handleOnStartDragging = useCallback(
+  const handleOnMoveStartThumb = useCallback(
     (clientX: number, thumb: 'min' | 'max') => {
       if (thumb === 'min') setIsDraggingMin(true);
       else setIsDraggingMax(true);
@@ -142,16 +142,17 @@ const Range = ({
     [handleOnMoveThumb]
   );
 
-  const handleOnEndDragging = useCallback(() => {
+  const handleOnMoveEndThumb = useCallback(() => {
     if (isDraggingMin && isFixedRange) {
-      const newValue = getClosestValueInArray(minThumbValue, rangeValues);
+      const newValue = getClosestValueInArray(minThumbValue, rangeValues, { max: maxThumbValue });
+
       const relativeNewValue = getRelativeThumbValue(minValue, maxValue, newValue);
 
       updateMinThumbPosition(relativeNewValue);
     }
 
     if (isDraggingMax && isFixedRange) {
-      const newValue = getClosestValueInArray(maxThumbValue, rangeValues);
+      const newValue = getClosestValueInArray(maxThumbValue, rangeValues, { min: minThumbValue });
       const relativeNewValue = getRelativeThumbValue(minValue, maxValue, newValue);
 
       updateMaxThumbPosition(relativeNewValue);
@@ -177,14 +178,14 @@ const Range = ({
   }, 250);
 
   useEffect(() => {
-    document.addEventListener('mouseup', handleOnEndDragging);
-    document.addEventListener('touchend', handleOnEndDragging);
+    document.addEventListener('mouseup', handleOnMoveEndThumb);
+    document.addEventListener('touchend', handleOnMoveEndThumb);
 
     return () => {
-      document.removeEventListener('mouseup', handleOnEndDragging);
-      document.removeEventListener('touchend', handleOnEndDragging);
+      document.removeEventListener('mouseup', handleOnMoveEndThumb);
+      document.removeEventListener('touchend', handleOnMoveEndThumb);
     };
-  }, [handleOnEndDragging, handleOnMoveThumb]);
+  }, [handleOnMoveEndThumb, handleOnMoveThumb]);
 
   return (
     <div
@@ -220,11 +221,11 @@ const Range = ({
           style={{ left: `${relativeMinThumbValue}%` }}
           onMouseDown={(event) => {
             event.preventDefault();
-            handleOnStartDragging(event.clientX, 'min');
+            handleOnMoveStartThumb(event.clientX, 'min');
           }}
           onTouchStart={(event) => {
             event.preventDefault();
-            handleOnStartDragging(event.touches?.[0]?.clientX, 'min');
+            handleOnMoveStartThumb(event.touches?.[0]?.clientX, 'min');
           }}
         />
 
@@ -236,11 +237,11 @@ const Range = ({
           style={{ left: `${relativeMaxThumbValue}%` }}
           onMouseDown={(event) => {
             event.preventDefault();
-            handleOnStartDragging(event.clientX, 'max');
+            handleOnMoveStartThumb(event.clientX, 'max');
           }}
           onTouchStart={(event) => {
             event.preventDefault();
-            handleOnStartDragging(event.touches?.[0]?.clientX, 'max');
+            handleOnMoveStartThumb(event.touches?.[0]?.clientX, 'max');
           }}
         />
       </div>
@@ -249,7 +250,7 @@ const Range = ({
         {rangeValues.map((rangeValue: number, index, list) =>
           Boolean(onUpdateRangeValue) ? (
             <input
-              key={`range__value-${rangeValue}`}
+              key={`range__value-${index}`}
               className={styles['range__input__range-values__input']}
               type="number"
               min={list[index - 1] || 0}
@@ -259,7 +260,7 @@ const Range = ({
             />
           ) : (
             <label
-              key={`range__value-${rangeValue}`}
+              key={`range__value-${index}`}
               className={styles['range__input__range-values__label']}
               style={{ left: `${Math.round((rangeValue * 100) / maxValue)}%` }}
             >
