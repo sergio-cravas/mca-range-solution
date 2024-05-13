@@ -244,6 +244,7 @@ const Range = ({
         {rangeValues.map((rangeValue: number, index, list) =>
           Boolean(onUpdateRangeValue) ? (
             <input
+              data-cy="range-input-label"
               key={`range__value-${index}`}
               className={styles['range__input__range-values__input']}
               type="number"

@@ -35,7 +35,8 @@
     "**/*.ts",
     "**/*.tsx",
     "public/icons/.icon.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "cypress"
   ],
   "exclude": [
     "node_modules"
