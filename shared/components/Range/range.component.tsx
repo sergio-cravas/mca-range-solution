@@ -254,11 +254,7 @@ const Range = ({
               onChange={(event) => handleOnUpdateRangeValue(index, +event.target.value)}
             />
           ) : (
-            <label
-              key={`range__value-${index}`}
-              className={styles['range__input__range-values__label']}
-              style={{ left: `${Math.round((rangeValue * 100) / maxValue)}%` }}
-            >
+            <label key={`range__value-${index}`} className={styles['range__input__range-values__label']}>
               {rangeValue}
             </label>
           )
