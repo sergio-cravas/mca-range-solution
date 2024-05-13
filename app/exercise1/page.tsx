@@ -12,7 +12,7 @@ const getMinAndMaxData = async () => {
   return { min: response?.min || 0, max: response?.max || 100 };
 };
 
-export default async function Page() {
+export default async function Exercise1Page() {
   const { min, max } = await getMinAndMaxData();
 
   return (
